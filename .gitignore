@@ -1,9 +1,16 @@
+report.html
+
+
+
 # History files
 .Rhistory
 .Rapp.history
 
 # Session Data files
 .RData
+
+# R project files
+.Rproj
 
 # User-specific files
 .Ruserdata
