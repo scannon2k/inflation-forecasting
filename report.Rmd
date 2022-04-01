@@ -1,0 +1,48 @@
+---
+title: "Forecast Averaging: Inflation Models in R"
+subtitle: "Estimate and amalgamate inflation forecasting models using data from FRED"
+author: "Sean Cannon"
+date: "`r format(Sys.Date(),'%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    code_folding: "hide"
+    toc: no
+    fig_caption: yes
+    theme: simplex
+    toc_float: no
+---
+```{r setup, include=FALSE}
+rm(list=ls())
+graphics.off()
+```
+
+```{r packages, message=FALSE}
+require(fpp3)
+require(tidyquant)
+require(stargazer)
+require(kableExtra)
+```
+
+```{r load_data}
+# Use tidyquant function tq_get to gather data from FRED
+fred_data <- tq_get("LBSSA12",
+                    get = "economic.data",
+                    from = "1976-01-01",
+                    to   = "2019-12-01") %>%
+  mutate(Month = yearmonth(date), value = price) %>%
+  select(-c(date, price)) %>%
+  as_tsibble(index = Month, key = symbol)
+# Visualize the raw data stored in fred_data using autoplot
+fred_data %>%
+  autoplot(value) +
+  labs(x = "Date", y = "Percent") +
+  ggtitle("Florida Labor Force Participation Rate")
+```
+<br>
+<h5>Hello world</h5>
+<br>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+<br>
