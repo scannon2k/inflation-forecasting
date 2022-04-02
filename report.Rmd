@@ -1,6 +1,6 @@
 ---
 title: "Forecast Averaging: Inflation Models in R"
-subtitle: "Estimate and amalgamate inflation forecasting models using data from FRED"
+subtitle: "Use ensemble forecasting to predict 1-year ahead inflation using data from FRED"
 author: "Sean Cannon"
 date: "`r format(Sys.Date(),'%B %d, %Y')`"
 output: 
@@ -17,7 +17,7 @@ rm(list=ls())
 graphics.off()
 ```
 
-```{r packages, message=FALSE}
+```{r packages, message=FALSE, warning=FALSE}
 require(fpp3)
 require(tidyquant)
 require(stargazer)
@@ -25,19 +25,18 @@ require(kableExtra)
 ```
 
 ```{r load_data}
-# Use tidyquant function tq_get to gather data from FRED
-fred_data <- tq_get("LBSSA12",
+# Vector of variables to be gathered:
+vars <- c("PCEPI","UNRATE","EXPINF1YR","MICH","INDPRO")
+# Use tidyquant function tq_get to gather economic data from FRED and format as a tsibble
+fred_data <- tq_get(vars,
                     get = "economic.data",
-                    from = "1976-01-01",
-                    to   = "2019-12-01") %>%
+                    from = "1982-01-01") %>%
   mutate(Month = yearmonth(date), value = price) %>%
   select(-c(date, price)) %>%
   as_tsibble(index = Month, key = symbol)
-# Visualize the raw data stored in fred_data using autoplot
+# Visualize the raw data
 fred_data %>%
-  autoplot(value) +
-  labs(x = "Date", y = "Percent") +
-  ggtitle("Florida Labor Force Participation Rate")
+  autoplot()
 ```
 <br>
 <h5>Hello world</h5>
