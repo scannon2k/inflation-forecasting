@@ -15,33 +15,119 @@ output:
 ```{r setup, include=FALSE}
 rm(list=ls())
 graphics.off()
+knitr::opts_chunk$set(echo = TRUE,
+                      message = TRUE,
+                      warning = TRUE)
 ```
 
 ```{r packages, message=FALSE, warning=FALSE}
 require(fpp3)
+require(tsibble)
+require(tidyverse)
 require(tidyquant)
-require(stargazer)
 require(kableExtra)
+require(reshape2)
 ```
 
+<br>
+<h5>Background</h5>
+<br>
+
+Introduce the topics and objectives of the project here
+
+<br>
+<h5>Data and Variables</h5>
+<br>
 ```{r load_data}
 # Vector of variables to be gathered:
-vars <- c("PCEPI","UNRATE","EXPINF1YR","MICH","INDPRO")
+Variables <- c("PCEPI","UNRATE","EXPINF1YR","MICH","INDPRO")
+
 # Use tidyquant function tq_get to gather economic data from FRED and format as a tsibble
-fred_data <- tq_get(vars,
+fred_data <- tq_get(Variables,
                     get = "economic.data",
                     from = "1982-01-01") %>%
   mutate(Month = yearmonth(date), value = price) %>%
   select(-c(date, price)) %>%
   as_tsibble(index = Month, key = symbol)
-# Visualize the raw data
-fred_data %>%
-  autoplot()
-```
-<br>
-<h5>Hello world</h5>
-<br>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+# Pivot the data to be in a more conventional wide format
+fred_dataw <- fred_data %>%
+  pivot_wider(names_from = symbol, values_from = value) %>%
+  as_tsibble()
+```
+
+```{r data_table}
+# Define description and units vectors for the table
+Description <- c("Personal Consumption Expenditures: Chain-type Price Index","Unemployment Rate","1-Year Expected Inflation","University of Michigan: Inflation Expectation","Industrial Production: Total Index")
+Units <- c("Index 2012=100, Seasonally Adjusted","Percent, Seasonally Adjusted","Percent, Not Seasonally Adjusted","Percent, Not Seasonally Adjusted","Index 2017=100, Seasonally Adjusted")
+
+# Create dataframe for kable function
+table_data <- data.frame(Variables, Description, Units)
+
+# Table displaying variables, description, and units
+kbl(table_data) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+```{r visualize_vars}
+# Use facet grid to visualize raw data for variables
+fred_data %>% 
+  ggplot(aes(x = Month, y = value)) + 
+  geom_line() + 
+  facet_grid(vars(symbol), scales = "free_y") + 
+  labs(y = " ")
+```
+
+```{r transform}
+# Transform variables
+tdata <- fred_dataw %>% select(c(PCEPI, UNRATE, EXPINF1YR, MICH, INDPRO)) %>%
+  mutate(infl = 1200*log(PCEPI/lag(PCEPI))) %>%                           # inflation
+  mutate(dinfl = infl - lag(infl,1)) %>%                                  # differenced inflation
+  mutate(dinfl12 = 100*log(PCEPI/lag(PCEPI,12)) - lag(infl,12)) %>%       # differenced inflation 12
+  mutate(unrate = UNRATE - lag(UNRATE)) %>%                               # differenced unrate
+  mutate(expinf1yr = EXPINF1YR - lag(EXPINF1YR)) %>%                      # differenced expected inf
+  mutate(mich = MICH - lag(MICH)) %>%                                     # differenced mich
+  mutate(indpro = 1200*log(INDPRO/lag(INDPRO))) %>%                       # differenced indpro
+  # keep only transformed variables
+  select(-c(PCEPI, UNRATE, EXPINF1YR, MICH, INDPRO)) %>%
+  drop_na()
+
+# Split the data into training and testing groups
+train_data <- tdata %>% filter_index(~ "2019-12")
+test_data <- tdata %>% filter_index("2020-01" ~ .)
+```
+
+```{r acf}
+# Compare ACF plots before and after transformation
+# fred_dataw %>% ACF(MICH) %>%
+#   autoplot()
+# tdata %>% ACF(mich) %>%
+#   autoplot()
+```
+
+
+```{r melt}
+tdatam <- melt(tdata, "Month")
+ggplot(tdatam, aes(Month, value)) + 
+  geom_line() + 
+  facet_wrap(~variable, scales = "free", ncol = 2)
+```
+
+
+<br>
+<h5>Models</h5>
+
+Using monthly data, the Phillips curve specification used is as follows:
+
+<center>$π^{12}_{t}−π_{t−12}=ϕ+β(B)Δπ_{t−12}+γ(B)u_{t−12}+ε_t$</center>
+<br>
+
+<br>
+<h5>Estimation and Results</h5
+
+<br>
+
+<br>
+<h5>Conclusion</h5>
+
 <br>
