@@ -107,6 +107,7 @@ test_data <- tdata %>% filter_index("2020-01" ~ .)
 
 
 ```{r melt}
+# Observe the plots of the transformed variables
 tdatam <- melt(tdata, "Month")
 ggplot(tdatam, aes(Month, value)) + 
   geom_line() + 
@@ -119,7 +120,75 @@ ggplot(tdatam, aes(Month, value)) +
 
 Using monthly data, the Phillips curve specification used is as follows:
 
-<center>$π^{12}_{t}−π_{t−12}=ϕ+β(B)Δπ_{t−12}+γ(B)u_{t−12}+ε_t$</center>
+<center>$\pi^{12}_{t}−\pi_{t−12}=\phi+\beta(B)\Delta\pi_{t−12}+\gamma(B)u_{t−12}+\varepsilon_t$</center>
+
+```{r fit_models}
+# Fit the baseline Phillips curve model using unemployment rate
+fitm1 <- train_data %>% 
+  model(
+    m1 = TSLM(dinfl12 ~ 1 +
+                 lag(dinfl,12) + lag(dinfl,13) + lag(dinfl,14) +
+                 lag(dinfl,15) + lag(dinfl,16) + lag(dinfl,17) +
+                 lag(dinfl,18) + lag(dinfl,19) + lag(dinfl,20) +
+                 lag(dinfl,21) + lag(dinfl,22) + lag(dinfl,23) +
+                 lag(unrate,12) + lag(unrate,13) + lag(unrate,14) +
+                 lag(unrate,15) + lag(unrate,16) + lag(unrate,17) +
+                 lag(unrate,18) + lag(unrate,19) + lag(unrate,20) +
+                 lag(unrate,21) + lag(unrate,22) + lag(unrate,23) 
+                 )
+  )
+report(fitm1)
+
+# Fit the Phillips curve model using 1yr expected inflation
+fitm2 <- train_data %>% 
+  model(
+    m2 = TSLM(dinfl12 ~ 1 +
+                 lag(dinfl,12) + lag(dinfl,13) + lag(dinfl,14) +
+                 lag(dinfl,15) + lag(dinfl,16) + lag(dinfl,17) +
+                 lag(dinfl,18) + lag(dinfl,19) + lag(dinfl,20) +
+                 lag(dinfl,21) + lag(dinfl,22) + lag(dinfl,23) +
+                 lag(expinf1yr,12) + lag(expinf1yr,13) + lag(expinf1yr,14) +
+                 lag(expinf1yr,15) + lag(expinf1yr,16) + lag(expinf1yr,17) +
+                 lag(expinf1yr,18) + lag(expinf1yr,19) + lag(expinf1yr,20) +
+                 lag(expinf1yr,21) + lag(expinf1yr,22) + lag(expinf1yr,23) 
+                 )
+  )
+report(fitm2)
+
+# Fit the Phillips curve model using Michigan inflation expectations
+fitm3 <- train_data %>% 
+  model(
+    m3 = TSLM(dinfl12 ~ 1 +
+                 lag(dinfl,12) + lag(dinfl,13) + lag(dinfl,14) +
+                 lag(dinfl,15) + lag(dinfl,16) + lag(dinfl,17) +
+                 lag(dinfl,18) + lag(dinfl,19) + lag(dinfl,20) +
+                 lag(dinfl,21) + lag(dinfl,22) + lag(dinfl,23) +
+                 lag(mich,12) + lag(mich,13) + lag(mich,14) +
+                 lag(mich,15) + lag(mich,16) + lag(mich,17) +
+                 lag(mich,18) + lag(mich,19) + lag(mich,20) +
+                 lag(mich,21) + lag(mich,22) + lag(mich,23) 
+                 )
+  )
+report(fitm3)
+
+# Fit the Phillips curve model using industrial production
+fitm4 <- train_data %>% 
+  model(
+    m4 = TSLM(dinfl12 ~ 1 +
+                 lag(dinfl,12) + lag(dinfl,13) + lag(dinfl,14) +
+                 lag(dinfl,15) + lag(dinfl,16) + lag(dinfl,17) +
+                 lag(dinfl,18) + lag(dinfl,19) + lag(dinfl,20) +
+                 lag(dinfl,21) + lag(dinfl,22) + lag(dinfl,23) +
+                 lag(indpro,12) + lag(indpro,13) + lag(indpro,14) +
+                 lag(indpro,15) + lag(indpro,16) + lag(indpro,17) +
+                 lag(indpro,18) + lag(indpro,19) + lag(indpro,20) +
+                 lag(indpro,21) + lag(indpro,22) + lag(indpro,23) 
+                 )
+  )
+report(fitm4)
+```
+
+
 <br>
 
 <br>
