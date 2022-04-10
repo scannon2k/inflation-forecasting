@@ -1,6 +1,5 @@
 ---
-title: "Forecast Averaging: Inflation Models in R"
-subtitle: "Use ensemble forecasting to predict 1-year ahead inflation using data from FRED"
+title: "Modeling Inflation Using Ensemble Forecasting"
 author: "Sean Cannon"
 date: "`r format(Sys.Date(),'%B %d, %Y')`"
 output: 
@@ -12,9 +11,26 @@ output:
     theme: simplex
     toc_float: no
 ---
+<style type="text/css">
+h1.title {
+  text-align: center;
+  padding-bottom: 16px;
+  padding-top: 16px;
+}
+h4.author {
+  text-align: center;
+}
+h4.date {
+  text-align: center;
+}
+</style>
+
+---
+
 ```{r setup, include=FALSE}
 rm(list=ls())
 graphics.off()
+# ECHO, MESSAGE, AND WARNING = FALSE for final knit
 knitr::opts_chunk$set(echo = TRUE,
                       message = TRUE,
                       warning = TRUE)
@@ -30,20 +46,25 @@ require(reshape2)
 ```
 
 <br>
-<h5>Background</h5>
+<h3>Abstract</h3>
 <br>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-Introduce the topics and objectives of the project here
+---
 
 <br>
-<h5>Data and Variables</h5>
+<h3>Introduction</h3>
 <br>
-```{r load_data}
+This is an example of a block of text that was copied and pasted from word. This is an example of a block of text that was copied and pasted from word and other things and I am typing a lot. But it actually doesn’t mean anything, etc. This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word 
+
+---
+
+```{r data}
 # Vector of variables to be gathered:
-Variables <- c("PCEPI","UNRATE","EXPINF1YR","MICH","INDPRO")
+vars <- c("PCEPI","UNRATE","EXPINF1YR","MICH","INDPRO")
 
 # Use tidyquant function tq_get to gather economic data from FRED and format as a tsibble
-fred_data <- tq_get(Variables,
+fred_data <- tq_get(vars,
                     get = "economic.data",
                     from = "1982-01-01") %>%
   mutate(Month = yearmonth(date), value = price) %>%
@@ -54,31 +75,7 @@ fred_data <- tq_get(Variables,
 fred_dataw <- fred_data %>%
   pivot_wider(names_from = symbol, values_from = value) %>%
   as_tsibble()
-```
 
-```{r data_table}
-# Define description and units vectors for the table
-Description <- c("Personal Consumption Expenditures: Chain-type Price Index","Unemployment Rate","1-Year Expected Inflation","University of Michigan: Inflation Expectation","Industrial Production: Total Index")
-Units <- c("Index 2012=100, Seasonally Adjusted","Percent, Seasonally Adjusted","Percent, Not Seasonally Adjusted","Percent, Not Seasonally Adjusted","Index 2017=100, Seasonally Adjusted")
-
-# Create dataframe for kable function
-table_data <- data.frame(Variables, Description, Units)
-
-# Table displaying variables, description, and units
-kbl(table_data) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-```
-
-```{r visualize_vars}
-# Use facet grid to visualize raw data for variables
-fred_data %>% 
-  ggplot(aes(x = Month, y = value)) + 
-  geom_line() + 
-  facet_grid(vars(symbol), scales = "free_y") + 
-  labs(y = " ")
-```
-
-```{r transform}
 # Transform variables
 tdata <- fred_dataw %>% select(c(PCEPI, UNRATE, EXPINF1YR, MICH, INDPRO)) %>%
   mutate(infl = 1200*log(PCEPI/lag(PCEPI))) %>%                           # inflation
@@ -95,33 +92,61 @@ tdata <- fred_dataw %>% select(c(PCEPI, UNRATE, EXPINF1YR, MICH, INDPRO)) %>%
 # Split the data into training and testing groups
 train_data <- tdata %>% filter_index(~ "2018-12")
 test_data <- tdata %>% filter_index("2019-01" ~ .)
-```
 
-```{r acf}
+# Use facet grid to visualize raw data for variables
+# fred_data %>% 
+#   ggplot(aes(x = Month, y = value)) + 
+#   geom_line() + 
+#   facet_grid(vars(symbol), scales = "free_y") + 
+#   labs(y = " ")
+
 # Compare ACF plots before and after transformation
 # fred_dataw %>% ACF(MICH) %>%
 #   autoplot()
 # tdata %>% ACF(mich) %>%
 #   autoplot()
-```
 
-
-```{r melt}
 # Observe the plots of the transformed variables
-tdatam <- melt(tdata, "Month")
-ggplot(tdatam, aes(Month, value)) + 
-  geom_line() + 
-  facet_wrap(~variable, scales = "free", ncol = 2)
+# tdatam <- melt(tdata, "Month")
+# ggplot(tdatam, aes(Month, value)) + 
+#   geom_line() + 
+#   facet_wrap(~variable, scales = "free", ncol = 2)
 ```
 
+<br>
+<h3>Data and Variables</h3>
+<br>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+```{r data_table}
+# Define description and units vectors for the table
+desc <- c("Personal Consumption Expenditures: Chain-type Price Index","Unemployment Rate","1-Year Expected Inflation","University of Michigan: Inflation Expectation","Industrial Production: Total Index")
+units <- c("Index 2012=100, Seasonally Adjusted","Percent, Seasonally Adjusted","Percent, Not Seasonally Adjusted","Percent, Not Seasonally Adjusted","Index 2017=100, Seasonally Adjusted")
+
+# Create dataframe for kable function
+table_data <- data.frame(vars, desc, units)
+
+# Table displaying variables, description, and units
+kbl(table_data, col.names = c("Variables", "Description", "Units"), align = "lll") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+---
 
 <br>
-<h5>Models</h5>
+<h3>The Phillips Curve</h3>
 <br>
+Talk about the standard Phillips Curve model and how were using it. Get into technical details.
 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 Using monthly data, the Phillips curve specification used is as follows:
 
 <center>$\pi^{12}_{t}−\pi_{t−12}=\phi+\beta(B)\Delta\pi_{t−12}+\gamma(B)u_{t−12}+\varepsilon_t$</center>
+
+---
 
 ```{r fit_models}
 # Fit four models with the Phillips curve model specifications using unemployment rate, 1yr expected inflation, Michigan inflation expectations, and industrial production
@@ -170,26 +195,77 @@ fit_all <- train_data %>%
     )
 
 # Fit the combination model
-fit_combo <- fit_all %>% mutate(combo = (mUN + mEXPINF + mMICH + mINDPRO)/4)
+fit_combo <- fit_all %>% mutate(ensem = (mUN + mEXPINF + mMICH + mINDPRO)/4)
 ```
 
 <br>
-<h5>Estimation and Results</h5
+<h3>Models</h3>
 <br>
 
-```{r forecast}
-# Forecast and plot the estimated models
-forecast <- fit_combo %>% forecast(new_data = test_data) 
-forecast %>% autoplot(filter(tdata, year(Month) > 2016), level = c(95))
-```
+Talk about the models that we fit, alternative variables than unemployment rate, and ensemble forecasting.
 
-```{r accuracy}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+---
+
+```{r forecast_accuracy}
+# Create the forecast using the combination model
+forecast <- fit_combo %>% forecast(new_data = test_data)
 # Assess in-sample forecast accuracy
-accuracy(fit_combo)
+insample <- accuracy(fit_combo)
 # Assess out-of-sample forecast accuracy
-accuracy(forecast, tdata)
+outsample <- accuracy(forecast, tdata)
 ```
 
 <br>
-<h5>Conclusion</h5>
+<h3>Estimation and Results</h3>
 <br>
+
+
+```{r forecast_plot, fig.align='center'}
+#Plot the estimated models
+forecast %>% autoplot(filter(tdata, year(Month) > 2016), level = c(95)) +
+  labs(x = "Month", y = "Percent Inflation") +
+  ggtitle("Predicted Monthly Inflation Rate Using 5 Models")
+```
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+<center>$MAPE = mean(\left| p_t \right|)$</center>
+
+
+```{r insample_acc}
+# Create a table to display in-sample accuracy between models
+insample %>%
+  select(c(".model", ".type", "MAPE")) %>%
+  kbl(col.names = c("Model", "Type", "MAPE"), align = "ccc") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  row_spec(4,bold=T,hline_after = T)
+```
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+```{r outsample_acc}
+# Create a table to display out-of-sample accuracy between models
+outsample %>%
+  select(c(".model", ".type", "MAPE")) %>%
+  kbl(col.names = c("Model", "Type", "MAPE"), align = "ccc") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  row_spec(2,bold=T,hline_after = T)
+```
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+---
+
+<br>
+<h3>Conclusion</h3>
+<br>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+---
+
+<br>
+<h3>References</h3>
+<br>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
