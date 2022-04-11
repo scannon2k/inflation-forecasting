@@ -51,7 +51,7 @@ require(reshape2)
 <h3>Abstract</h3>
 <br>
 
-When forecasting inflation, economists have explored a wide array of both simple and complicated models. One of the most common, well-known macroeconomic models for this purpose is the unemployment rate Phillips curve. This paper uses an ensemble approach and details models that employ a Phillips curve specification using different economic variables. The results of the individual models are compared to an ensemble model, an average of the four estimates. Findings showed that of the five estimated models, the Cleveland Fed’s expected rate of inflation was the most reliable metric for forecasting year ahead inflation.
+When forecasting inflation, economists have explored a wide array of both simple and complicated models. One of the most common, well-known macroeconomic models for this purpose is the unemployment rate Phillips curve. This paper uses an ensemble approach and details models that employ a Phillips curve specification using different economic variables. The results of the individual models are compared to an ensemble model, an average of the four estimates. Findings showed that of the five estimated models, the Cleveland Fed’s expected rate of inflation was the most reliable metric for forecasting year ahead inflation. Results are posted [here](https://scannon2k.github.io/inflation-forecasting/).
 
 
 ---
