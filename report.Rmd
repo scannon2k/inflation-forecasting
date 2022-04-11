@@ -51,7 +51,7 @@ require(reshape2)
 <h3>Abstract</h3>
 <br>
 
-When forecasting inflation, economists have explored wide array of both simple and complicated models. One of the most common, well-known macroeconomic models for this purpose is the unemployment rate Phillips curve. This paper uses an ensemble approach and details models that employ a Phillips curve specification using different economic variables. The results of the individual models are compared to an ensemble model, an average of the four estimates. Findings showed that of the five estimated models, the Cleveland Fed’s expected rate of inflation was the most reliable metric for forecasting year ahead inflation.
+When forecasting inflation, economists have explored a wide array of both simple and complicated models. One of the most common, well-known macroeconomic models for this purpose is the unemployment rate Phillips curve. This paper uses an ensemble approach and details models that employ a Phillips curve specification using different economic variables. The results of the individual models are compared to an ensemble model, an average of the four estimates. Findings showed that of the five estimated models, the Cleveland Fed’s expected rate of inflation was the most reliable metric for forecasting year ahead inflation.
 
 
 ---
@@ -298,4 +298,10 @@ Overall, using the Phillips curve specification, the Fed inflation expectations 
 <br>
 <h3>References</h3>
 <br>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Hyndman, Rob J. “Forecasting: Principles&nbsp;and&nbsp;Practice (3rd Ed).” OTexts. Accessed April 10, 2022. https://otexts.com/fpp3/.
+<br><br>
+Meyer, Brent H, and Mehmet Pasaogullari. “Simple Ways to Forecast Inflation: What Works Best?” Federal Reserve Bank of Cleveland, December 6, 2010. https://www.clevelandfed.org/en/newsroom-and-events/publications/economic-commentary/economic-commentary-archives/2010-economic-commentaries/ec-201017-simple-ways-to-forecast-inflation-what-works-best.aspx.
+<br><br>
+Rapach, David E., and Jack Strauss. “Forecasting US State-Level Employment Growth: An Amalgamation Approach.” International Journal of Forecasting. Elsevier, January 1, 1970. https://econpapers.repec.org/article/eeeintfor/v_3a28_3ay_3a2012_3ai_3a2_3ap_3a315-327.htm.
+<br><br>
+Stock, James H, and Mark W Watson. “Forecasting Inflation.” NBER, March 1, 1999. https://www.nber.org/papers/w7023. 
