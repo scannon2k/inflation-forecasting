@@ -2,14 +2,16 @@
 title: "Modeling Inflation Using Ensemble Forecasting"
 author: "Sean Cannon"
 date: "`r format(Sys.Date(),'%B %d, %Y')`"
-output: 
+output:
   html_document:
     df_print: paged
-    code_folding: "hide"
+    code_folding: hide
     toc: no
     fig_caption: yes
     theme: simplex
     toc_float: no
+  pdf_document:
+    toc: no
 ---
 <style type="text/css">
 h1.title {
@@ -48,16 +50,22 @@ require(reshape2)
 <br>
 <h3>Abstract</h3>
 <br>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+When forecasting inflation, economists have explored wide array of both simple and complicated models. One of the most common, well-known macroeconomic models for this purpose is the unemployment rate Phillips curve. This paper uses an ensemble approach and details models that employ a Phillips curve specification using different economic variables. The results of the individual models are compared to an ensemble model, an average of the four estimates. Findings showed that of the five estimated models, the Cleveland Fed’s expected rate of inflation was the most reliable metric for forecasting year ahead inflation.
+
 
 ---
+
 
 <br>
 <h3>Introduction</h3>
 <br>
-This is an example of a block of text that was copied and pasted from word. This is an example of a block of text that was copied and pasted from word and other things and I am typing a lot. But it actually doesn’t mean anything, etc. This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word This is an example of a block of text that was copied and pasted from word 
+
+Inflation, or the rate of increase in prices over time, is a closely monitored economic variable and being able to forecast changes in prices with any reliability is an exceedingly useful tool. Conventional macroeconomics teaches the Phillips curve, a model that illustrates an inverse relationship between the unemployment rate and the rate of inflation. This paper seeks to answer two key questions. First, which economic variables serve as the best predictors for the rate of inflation using a Phillips curve specification? Second, does an ensemble approach using the average of the models produce better forecasts than any individual model? This analysis uses a practical, time series approach to inflation forecasting.
+
 
 ---
+
 
 ```{r data}
 # Vector of variables to be gathered:
@@ -78,13 +86,13 @@ fred_dataw <- fred_data %>%
 
 # Transform variables
 tdata <- fred_dataw %>% select(c(PCEPI, UNRATE, EXPINF1YR, MICH, INDPRO)) %>%
-  mutate(infl = 1200*log(PCEPI/lag(PCEPI))) %>%                           # inflation
+  mutate(infl = 1200*log(PCEPI/lag(PCEPI))) %>%                           # transformed inflation
   mutate(dinfl = infl - lag(infl,1)) %>%                                  # differenced inflation
   mutate(dinfl12 = 100*log(PCEPI/lag(PCEPI,12)) - lag(infl,12)) %>%       # differenced inflation 12
   mutate(unrate = UNRATE - lag(UNRATE)) %>%                               # differenced unrate
   mutate(expinf1yr = EXPINF1YR - lag(EXPINF1YR)) %>%                      # differenced expected inf
   mutate(mich = MICH - lag(MICH)) %>%                                     # differenced mich
-  mutate(indpro = 1200*log(INDPRO/lag(INDPRO))) %>%                       # differenced indpro
+  mutate(indpro = 1200*log(INDPRO/lag(INDPRO))) %>%                       # transformed indpro
   # keep only transformed variables
   select(-c(PCEPI, UNRATE, EXPINF1YR, MICH, INDPRO)) %>%
   drop_na()
@@ -113,11 +121,13 @@ test_data <- tdata %>% filter_index("2019-01" ~ .)
 #   facet_wrap(~variable, scales = "free", ncol = 2)
 ```
 
+
 <br>
 <h3>Data and Variables</h3>
 <br>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+The data used in this analysis was gathered from the Federal Reserve’s online database (FRED), and the time series spans from January 1982 to March 2022. The table below shows a list of the variables used and their attributes.
+
 
 ```{r data_table}
 # Define description and units vectors for the table
@@ -131,22 +141,15 @@ table_data <- data.frame(vars, desc, units)
 kbl(table_data, col.names = c("Variables", "Description", "Units"), align = "lll") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+<br>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+As is consistent with economic theory, the variables <code>PCEPI</code> and <code>UNRATE</code> will be used in the initial estimation of the unemployment rate Phillips curve. <code>PCEPI</code> is a seasonally adjusted monthly price index of personal consumption expenditures and will serve as a measure of the percent increase or decrease in prices. Further, <code>UNRATE</code> is the seasonally adjusted monthly unemployment rate. In addition to the two conventional variables for forecasting inflation, three other variables were gathered as potential predictors of the change in prices in the economy. These include a calculation of the monthly expected inflation rate by the Federal Reserve Bank of Cleveland (<code>EXPINF1YR</code>), a calculation of median monthly expected price changes by the University of Michigan (<code>MICH</code>), and a monthly index of real production for the manufacturing, mining, and electric and gas industries in the United States (<code>INDPRO</code>). These three variables, like unemployment rate, should be predictors of inflation and will each be modeled with the same specifications.
+<br><br>
+To be used in the standard Phillips curve specification, the data must first be transformed to be stationary. A stationary time series is defined as one whose properties are constant over the entire observed length of time. Stationary time series have constant means and variance and exhibit no clear trend or seasonality. <code>PCEPI</code> required a log transformation and differencing to stabilize the mean and variance, and the resulting data for this variable was converted to monthly percent change. <code>UNRATE</code>, <code>EXPINF1YR</code>, and <code>MICH</code> also required differencing to make the time series stationary and reduce the trend and seasonality present in the data. Lastly, a log transformation was used to convert <code>INDPRO</code> into monthly percentage and to stabilize the variance of the time series. Checks on the plots and autocorrelation functions confirmed that the raw data was stationary and appeared to be that of a white noise series following the transformations.
+
 
 ---
 
-<br>
-<h3>The Phillips Curve</h3>
-<br>
-Talk about the standard Phillips Curve model and how were using it. Get into technical details.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-Using monthly data, the Phillips curve specification used is as follows:
-
-<center>$\pi^{12}_{t}−\pi_{t−12}=\phi+\beta(B)\Delta\pi_{t−12}+\gamma(B)u_{t−12}+\varepsilon_t$</center>
-
----
 
 ```{r fit_models}
 # Fit four models with the Phillips curve model specifications using unemployment rate, 1yr expected inflation, Michigan inflation expectations, and industrial production
@@ -198,15 +201,29 @@ fit_all <- train_data %>%
 fit_combo <- fit_all %>% mutate(ensem = (mUN + mEXPINF + mMICH + mINDPRO)/4)
 ```
 
+
 <br>
 <h3>Models</h3>
 <br>
 
-Talk about the models that we fit, alternative variables than unemployment rate, and ensemble forecasting.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+The first model is the unemployment rate Phillips curve, the baseline model for the analysis. According to economic theory, this model is stable and robust, so it will be used as a means of comparison when estimating models with the other variables of interest. The other three models will use the same specifications as the standard Phillips curve, instead replacing the unemployment rate with calculated inflation expectations or measures of industrial production. This paper uses the Stock and Watson (1999) specification of the Phillips curve below for all the estimated models.
+
+<br>
+<center>$\pi^{12}_{t}−\pi_{t−12}=\phi+\beta(B)\Delta\pi_{t−12}+\gamma(B)u_{t−12}+\varepsilon_t$</center>
+<br>
+
+This specification allows for extrapolation of the steady state levels of inflation ($\bar{\pi}$) and unemployment rate ($\bar{u}$). In the long-run steady state, the equilibrium between inflation and unemployment rate can be used to find a fixed level of $\bar{u}$, the natural rate of unemployment. This is convenient and shows the empirical applications of the Phillips curve. Note that instead of testing for the optimal number of lags, the lags of the models were specified to be consistent with economic theory.
+
+
+In addition to the four models outlined above, an ensemble model was estimated using the average of the four Phillips curve models. The intuition behind an amalgamation approach is that the ensemble model should have lower variance and be a better predictor than any of the individual models. The ensemble model specification is outlined below.
+
+<br>
+<center>$me=(m1+m2+m3+m4)/4$</center>
+<br>
 
 ---
+
 
 ```{r forecast_accuracy}
 # Create the forecast using the combination model
@@ -217,9 +234,11 @@ insample <- accuracy(fit_combo)
 outsample <- accuracy(forecast, tdata)
 ```
 
+
 <br>
 <h3>Estimation and Results</h3>
 <br>
+Before estimating, the data was split into two periods: training and testing. The models were estimated over the training dataset, which encompasses data up to December 2018. Thus, the testing dataset consists of data from January 2019 onward and will be used as the main assessment of the forecast accuracy. The plot of the one year forecast below shows the performance of the models both in-sample and out-of-sample.
 
 
 ```{r forecast_plot, fig.align='center'}
@@ -228,10 +247,14 @@ forecast %>% autoplot(filter(tdata, year(Month) > 2016), level = c(95)) +
   labs(x = "Month", y = "Percent Inflation") +
   ggtitle("Predicted Monthly Inflation Rate Using 5 Models")
 ```
+<br>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+In addition, the mean absolute percentage error (MAPE) will be used to compare the estimated models and their forecast accuracy. MAPE is the most widely used measure of forecast accuracy and is the average percentage error of the difference between actual and forecasted values. The mean absolute percent error is calculated using the formula below:
 
+<br>
 <center>$MAPE = mean(\left| p_t \right|)$</center>
+<br>
+<center>where, $p_t=100e_t/y_t$</center>
 
 
 ```{r insample_acc}
@@ -242,8 +265,10 @@ insample %>%
   kable_styling(bootstrap_options = c("striped", "hover")) %>%
   row_spec(4,bold=T,hline_after = T)
 ```
+<br>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+After estimating, none of the models fit the data particularly well. As outlined in the table above, the industrial production model had the lowest MAPE over the training dataset. This suggests that in-sample, industrial production was the best predictor of inflation. Interestingly, the ensemble model was outperformed by both the industrial production and unemployment rate models over the training period.
+
 
 ```{r outsample_acc}
 # Create a table to display out-of-sample accuracy between models
@@ -253,17 +278,22 @@ outsample %>%
   kable_styling(bootstrap_options = c("striped", "hover")) %>%
   row_spec(2,bold=T,hline_after = T)
 ```
+<br>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+The table above outlines the MAPE of each model when estimated over the test period. The Federal Reserve Bank of Cleveland’s calculated inflation expectations performed the best out-of-sample, followed closely by the ensemble model and industrial production model. The change in MAPE from the in-sample table suggests that the industrial production model may have been slightly overfitted to the training data. Though the models are similar in fit and specification, the Federal Reserve’s 1 year inflation expectations variable seems to be the most reliable metric for forecasting inflation based on these results.
+
 
 ---
+
 
 <br>
 <h3>Conclusion</h3>
 <br>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Overall, using the Phillips curve specification, the Fed inflation expectations model and ensemble models performed better than the unemployment rate, Michigan expectations, and industrial production models. In economics, expectations often become reality. Inflation expectations are known to be a key driver of real inflation rates in the economy, so it is not surprising that this model had the best forecasting potential. The most interesting conclusion from the analysis is that the ensemble model did not perform as well as predicted. This is surprising as amalgamation models are generally more accurate than any individual forecast. Perhaps using a weighted average instead of a simple average when specifying the ensemble model would have been more appropriate.
+
 
 ---
+
 
 <br>
 <h3>References</h3>
