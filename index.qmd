@@ -234,7 +234,6 @@ Before estimating, the data was split into train and test datasets. The models w
 
 ```{r, message=FALSE, warning=FALSE, include=TRUE, fig.align='center', fig.width=11, fig.height=7.5}
 #Plot the estimated models
-#Plot the estimated models
 forecast %>% autoplot(filter(tdata, year(Month) > 2016), level = c(95)) +
   labs(x = "Month", y = "Percent Inflation") +
   ggtitle("Predicted Monthly Inflation Rate Using 5 Models") +
