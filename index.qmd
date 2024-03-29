@@ -101,7 +101,7 @@ Refer to the table for a list of the variables used in the analysis and their at
 <br>
 
 | Variables | Description                                               | Units                               |
-|-------------|-------------------------------|-----------------------------|
+|-----------------|-----------------------------|---------------------------|
 | PCEPI     | Personal Consumption Expenditures: Chain-type Price Index | Index 2012=100, Seasonally Adjusted |
 | UNRATE    | Unemployment Rate                                         | Percent, Seasonally Adjusted        |
 | EXPINF1YR | 1-Year Expected Inflation                                 | Percent, Not Seasonally Adjusted    |
@@ -285,18 +285,18 @@ outsample %>%
 
 <br>
 
-The table above outlines the MAPE of each model when estimated over the test period. Even out-of-sample, the industrial production model again performed the best. It was followed by the ensemble model. Though the models are similar in fit and specification, the industrial production indexseems to be the most reliable metric for forecasting inflation based on these results.
+The table above outlines the MAPE of each model when estimated over the test period. Even out-of-sample, the industrial production model again performed the best. It was followed by the ensemble model. Though the models are similar in fit and specification, the industrial production index seems to be the most reliable metric for forecasting inflation based on these results.
 
 ## Summary
 
-Overall, using the Phillips curve specification, the industrial production model and ensemble models performed better than the inflation expectations, unemployment rate, and Michigan expectations models. This makes economic sense, as changes in industrial production tend to lead changes in the overall price level. Increases in input costs, capacity utilitzation, and supply chain are all components of industrial production and can precede changes in prices. The most interesting conclusion from the analysis is that the ensemble model did not perform as well as predicted. This is surprising as amalgamation models are generally more accurate than any individual forecast. Perhaps using a weighted average instead of a simple average when specifying the ensemble model would have been more appropriate.
+Overall, using the Phillips curve specification, the industrial production model and ensemble models performed better than the inflation expectations, unemployment rate, and Michigan expectations models. This makes economic sense, as changes in industrial production tend to lead changes in the overall price level. Increases in input costs, capacity utilization, and supply chain are all components of industrial production and can precede changes in prices. The most interesting conclusion from the analysis is that the ensemble model did not perform as well as predicted. This is surprising as amalgamation models are generally more accurate than any individual forecast. Perhaps using a weighted average instead of a simple average when specifying the ensemble model would have been more appropriate.
 
 ## References
 
-\[1\] Hyndman, Rob J. “Forecasting: Principles and Practice (3rd Ed).” OTexts. Accessed April 10, 2022. <https://otexts.com/fpp3/.>
+^\[1\]^ Hyndman, Rob J. “Forecasting: Principles and Practice (3rd Ed).” OTexts. Accessed April 10, 2022. <https://otexts.com/fpp3/.>
 
-\[2\] Stock, James H, and Mark W Watson. “Forecasting Inflation.” NBER, March 1, 1999. <https://www.nber.org/papers/w7023.>
+^\[2\]^ Stock, James H, and Mark W Watson. “Forecasting Inflation.” NBER, March 1, 1999. <https://www.nber.org/papers/w7023.>
 
-\[3\] Meyer, Brent H, and Mehmet Pasaogullari. “Simple Ways to Forecast Inflation: What Works Best?” Federal Reserve Bank of Cleveland, December 6, 2010. <https://www.clevelandfed.org/en/newsroom-and-events/publications/economic-commentary/economic-commentary-archives/2010-economic-commentaries/ec-201017-simple-ways-to-forecast-inflation-what-works-best.aspx.>
+^\[3\]^ Meyer, Brent H, and Mehmet Pasaogullari. “Simple Ways to Forecast Inflation: What Works Best?” Federal Reserve Bank of Cleveland, December 6, 2010. <https://www.clevelandfed.org/en/newsroom-and-events/publications/economic-commentary/economic-commentary-archives/2010-economic-commentaries/ec-201017-simple-ways-to-forecast-inflation-what-works-best.aspx.>
 
-\[4\] Rapach, David E., and Jack Strauss. “Forecasting US State-Level Employment Growth: An Amalgamation Approach.” International Journal of Forecasting. Elsevier, January 1, 1970. <https://econpapers.repec.org/article/eeeintfor/v_3a28_3ay_3a2012_3ai_3a2_3ap_3a315-327.htm.>
+^\[4\]^ Rapach, David E., and Jack Strauss. “Forecasting US State-Level Employment Growth: An Amalgamation Approach.” International Journal of Forecasting. Elsevier, January 1, 1970. <https://econpapers.repec.org/article/eeeintfor/v_3a28_3ay_3a2012_3ai_3a2_3ap_3a315-327.htm.>
